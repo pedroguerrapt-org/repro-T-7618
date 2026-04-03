@@ -22,7 +22,7 @@ jobs:
           proto debug config
 
       - name: Install tools
-        run: proto install --config-mode local
+        run: proto install
 
       - name: Verify zarf
         run: zarf version
