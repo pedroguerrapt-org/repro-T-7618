@@ -1,5 +1,5 @@
 [plugins]
 zarf = "https://raw.githubusercontent.com/Phault/proto-toml-plugins/main/plugins/zarf.toml"
 
-[tools.zarf]
-version = "0.74.0"
+[tools]
+zarf = { version = "0.74.0" }
