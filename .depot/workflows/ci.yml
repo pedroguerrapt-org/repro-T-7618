@@ -15,6 +15,7 @@ jobs:
 
       - name: Start tcpdump
         run: |
+          sudo apt-get update -qq && sudo apt-get install -yqq tcpdump
           sudo tcpdump -i any -w /tmp/proto-install.pcap \
             'host github.com or host objects.githubusercontent.com or host codeload.github.com' \
             -s 0 &
