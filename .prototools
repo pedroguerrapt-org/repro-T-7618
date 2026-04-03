@@ -1,58 +1,30 @@
-[plugins]
-actionlint = "https://raw.githubusercontent.com/Phault/proto-toml-plugins/main/actionlint/plugin.toml"
-buf = "file://./plugins/buf.toml"
-clusterctl = "file://./plugins/clusterctl.toml"
-golangci-lint = "https://raw.githubusercontent.com/b4nst/proto-plugins/refs/heads/main/toml/golangci-lint.toml"
-grafanactl = "file://./plugins/grafanactl.toml"
-hadolint = "file://./plugins/hadolint.toml"
-kind = "file://./plugins/kind.toml"
-pint = "file://./plugins/pint.toml"
-sloth = "file://./plugins/sloth.toml"
+# https://moonrepo.dev/docs/proto/config
+moon = "2.1.1"
+go = "1.26.1"
+python = "3.14.3"
+terraform = "1.14.7"
+buf = "1.66.1"
+zarf = "0.74.0"
+grafanactl = "0.1.9"
+golangci-lint = "2.11.3"
+kind = "0.31.0"
+clusterctl = "1.12.3"
+actionlint = "1.7.11"
+hadolint = "2.14.0"
+yq = "4.52.4"
+pint = "0.79.0"
+sloth = "0.15.0"
+
+[plugins.tools]
+actionlint = "source:.proto/plugins/actionlint.toml"
 terraform = "https://raw.githubusercontent.com/theomessin/proto-toml-plugins/master/terraform.toml"
-yq = "https://raw.githubusercontent.com/appthrust/proto-toml-plugins/main/yq/plugin.toml"
-zarf = "file://./plugins/zarf.toml"
-
-[tools.go]
-version = "1.26.1"
-
-[tools.python]
-version = "3.14.3"
-
-[tools.moon]
-version = "2.1.1"
-
-[tools.actionlint]
-version = "1.7.11"
-
-[tools.buf]
-version = "1.66.1"
-
-[tools.clusterctl]
-version = "1.12.3"
-
-[tools.golangci-lint]
-version = "2.11.3"
-
-[tools.grafanactl]
-version = "0.1.9"
-
-[tools.hadolint]
-version = "2.14.0"
-
-[tools.kind]
-version = "0.31.0"
-
-[tools.pint]
-version = "0.79.0"
-
-[tools.sloth]
-version = "0.15.0"
-
-[tools.terraform]
-version = "1.14.7"
-
-[tools.yq]
-version = "4.52.4"
-
-[tools.zarf]
-version = "0.74.0"
+buf = "https://raw.githubusercontent.com/stk0vrfl0w/proto-toml-plugins/main/plugins/buf.toml"
+golangci-lint = "https://raw.githubusercontent.com/b4nst/proto-plugins/refs/heads/main/toml/golangci-lint.toml"
+zarf = "source:.proto/plugins/zarf.toml"
+hadolint = "source:.proto/plugins/hadolint.toml"
+grafanactl = "source:.proto/plugins/grafanactl.toml"
+kind = "source:.proto/plugins/kind.toml"
+clusterctl = "source:.proto/plugins/clusterctl.toml"
+yq = "source:.proto/plugins/yq.toml"
+pint = "source:.proto/plugins/pint.toml"
+sloth = "source:.proto/plugins/sloth.toml"

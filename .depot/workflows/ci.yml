@@ -13,27 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup proto
+      - name: Setup proto toolchain
         uses: moonrepo/setup-toolchain@v0
-
-      - name: Install all tools
-        run: |
-          proto install go 1.26.1 &
-          proto install python 3.14.3 &
-          proto install moon 2.1.1 &
-          proto install actionlint 1.7.11 &
-          proto install buf 1.66.1 &
-          proto install clusterctl 1.12.3 &
-          proto install golangci-lint 2.11.3 &
-          proto install grafanactl 0.1.9 &
-          proto install hadolint 2.14.0 &
-          proto install kind 0.31.0 &
-          proto install pint 0.79.0 &
-          proto install sloth 0.15.0 &
-          proto install terraform 1.14.7 &
-          proto install yq 4.52.4 &
-          proto install zarf 0.74.0 &
-          wait
+        with:
+          auto-install: true
 
       - name: Verify tools
         run: |
