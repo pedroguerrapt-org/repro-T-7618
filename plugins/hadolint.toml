@@ -1,0 +1,18 @@
+name = "hadolint"
+type = "cli"
+
+[platform.linux]
+download-file = "hadolint-Linux-{arch}"
+
+[platform.macos]
+download-file = "hadolint-Darwin-{arch}"
+
+[install]
+download-url = "https://github.com/hadolint/hadolint/releases/download/v{version}/{download_file}"
+
+[install.arch]
+aarch64 = "arm64"
+x86_64 = "x86_64"
+
+[resolve]
+git-url = "https://github.com/hadolint/hadolint"

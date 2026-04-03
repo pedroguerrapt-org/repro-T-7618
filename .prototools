@@ -1,5 +1,30 @@
 [plugins]
-zarf = "file://./zarf-plugin.toml"
+actionlint = "https://raw.githubusercontent.com/Phault/proto-toml-plugins/main/actionlint/plugin.toml"
+buf = "file://./plugins/buf.toml"
+clusterctl = "file://./plugins/clusterctl.toml"
+golangci-lint = "https://raw.githubusercontent.com/b4nst/proto-plugins/refs/heads/main/toml/golangci-lint.toml"
+grafanactl = "file://./plugins/grafanactl.toml"
+hadolint = "file://./plugins/hadolint.toml"
+kind = "file://./plugins/kind.toml"
+pint = "file://./plugins/pint.toml"
+sloth = "file://./plugins/sloth.toml"
+terraform = "https://raw.githubusercontent.com/theomessin/proto-toml-plugins/master/terraform.toml"
+yq = "https://raw.githubusercontent.com/appthrust/proto-toml-plugins/main/yq/plugin.toml"
+zarf = "file://./plugins/zarf.toml"
 
 [tools]
+go = { version = "1.26.1" }
+python = { version = "3.14.3" }
+moon = { version = "2.1.1" }
+actionlint = { version = "1.7.11" }
+buf = { version = "1.66.1" }
+clusterctl = { version = "1.12.3" }
+golangci-lint = { version = "2.11.3" }
+grafanactl = { version = "0.1.9" }
+hadolint = { version = "2.14.0" }
+kind = { version = "0.31.0" }
+pint = { version = "0.79.0" }
+sloth = { version = "0.15.0" }
+terraform = { version = "1.14.7" }
+yq = { version = "4.52.4" }
 zarf = { version = "0.74.0" }

@@ -1,0 +1,20 @@
+name = "pint"
+type = "cli"
+
+[platform.linux]
+download-file = "pint-{version}-linux-{arch}.tar.gz"
+bin-path = "pint-linux-{arch}"
+
+[platform.macos]
+download-file = "pint-{version}-darwin-{arch}.tar.gz"
+bin-path = "pint-darwin-{arch}"
+
+[install]
+download-url = "https://github.com/cloudflare/pint/releases/download/v{version}/{download_file}"
+
+[install.arch]
+aarch64 = "arm64"
+x86_64 = "amd64"
+
+[resolve]
+git-url = "https://github.com/cloudflare/pint"

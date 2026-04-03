@@ -15,14 +15,13 @@ jobs:
 
       - name: Setup proto
         uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
 
-      - name: Debug config
+      - name: Verify tools
         run: |
-          cat .prototools
-          proto debug config
-
-      - name: Install zarf
-        run: proto install zarf 0.74.0
-
-      - name: Verify zarf
-        run: zarf version
+          zarf version
+          go version
+          moon --version
+          terraform version
+          kind version

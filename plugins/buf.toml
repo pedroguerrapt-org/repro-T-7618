@@ -1,0 +1,18 @@
+name = "buf"
+type = "cli"
+
+[platform.linux]
+download-file = "buf-Linux-{arch}"
+
+[platform.macos]
+download-file = "buf-Darwin-{arch}"
+
+[install]
+download-url = "https://github.com/bufbuild/buf/releases/download/v{version}/{download_file}"
+
+[install.arch]
+aarch64 = "aarch64"
+x86_64 = "x86_64"
+
+[resolve]
+git-url = "https://github.com/bufbuild/buf"

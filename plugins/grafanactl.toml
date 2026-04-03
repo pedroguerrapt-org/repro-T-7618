@@ -1,0 +1,20 @@
+name = "grafanactl"
+type = "cli"
+
+[platform.linux]
+download-file = "grafanactl_Linux_{arch}.tar.gz"
+bin-path = "grafanactl"
+
+[platform.macos]
+download-file = "grafanactl_Darwin_{arch}.tar.gz"
+bin-path = "grafanactl"
+
+[install]
+download-url = "https://github.com/grafana/grafanactl/releases/download/v{version}/{download_file}"
+
+[install.arch]
+aarch64 = "arm64"
+x86_64 = "x86_64"
+
+[resolve]
+git-url = "https://github.com/grafana/grafanactl"
