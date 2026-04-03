@@ -1,0 +1,14 @@
+name = "zarf"
+type = "cli"
+
+[platform]
+linux-x64 = "zarf_v{version}_Linux_amd64"
+linux-arm64 = "zarf_v{version}_Linux_arm64"
+macos-x64 = "zarf_v{version}_Darwin_amd64"
+macos-arm64 = "zarf_v{version}_Darwin_arm64"
+
+[install]
+download-url = "https://github.com/zarf-dev/zarf/releases/download/v{version}/{download_file}"
+
+[resolve]
+git-tag-url = "https://api.github.com/repos/zarf-dev/zarf/tags"

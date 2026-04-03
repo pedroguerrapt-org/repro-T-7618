@@ -21,8 +21,8 @@ jobs:
           cat .prototools
           proto debug config
 
-      - name: Install tools
-        run: proto install
+      - name: Install zarf
+        run: proto install zarf 0.74.0
 
       - name: Verify zarf
         run: zarf version
