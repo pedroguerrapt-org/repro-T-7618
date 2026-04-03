@@ -12,10 +12,14 @@ terraform = "https://raw.githubusercontent.com/theomessin/proto-toml-plugins/mas
 yq = "https://raw.githubusercontent.com/appthrust/proto-toml-plugins/main/yq/plugin.toml"
 zarf = "file://./plugins/zarf.toml"
 
-[tools]
-go = "1.26.1"
-python = "3.14.3"
-moon = "2.1.1"
+[tools.go]
+version = "1.26.1"
+
+[tools.python]
+version = "3.14.3"
+
+[tools.moon]
+version = "2.1.1"
 
 [tools.actionlint]
 version = "1.7.11"
