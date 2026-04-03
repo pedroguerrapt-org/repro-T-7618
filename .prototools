@@ -16,15 +16,39 @@ zarf = "file://./plugins/zarf.toml"
 go = "1.26.1"
 python = "3.14.3"
 moon = "2.1.1"
-actionlint = "1.7.11"
-buf = "1.66.1"
-clusterctl = "1.12.3"
-golangci-lint = "2.11.3"
-grafanactl = "0.1.9"
-hadolint = "2.14.0"
-kind = "0.31.0"
-pint = "0.79.0"
-sloth = "0.15.0"
-terraform = "1.14.7"
-yq = "4.52.4"
-zarf = "0.74.0"
+
+[tools.actionlint]
+version = "1.7.11"
+
+[tools.buf]
+version = "1.66.1"
+
+[tools.clusterctl]
+version = "1.12.3"
+
+[tools.golangci-lint]
+version = "2.11.3"
+
+[tools.grafanactl]
+version = "0.1.9"
+
+[tools.hadolint]
+version = "2.14.0"
+
+[tools.kind]
+version = "0.31.0"
+
+[tools.pint]
+version = "0.79.0"
+
+[tools.sloth]
+version = "0.15.0"
+
+[tools.terraform]
+version = "1.14.7"
+
+[tools.yq]
+version = "4.52.4"
+
+[tools.zarf]
+version = "0.74.0"
