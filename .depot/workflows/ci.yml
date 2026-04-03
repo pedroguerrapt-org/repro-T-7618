@@ -18,7 +18,7 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -yqq tcpdump
           sudo tcpdump -i any -w /tmp/proto-install.pcap \
             'tcp port 443' \
-            -s 256 &
+            -s 0 &
           echo $! > /tmp/tcpdump.pid
           sleep 1
 
@@ -37,14 +37,48 @@ jobs:
           terraform version
           kind version
 
+      - name: Debug failure
+        if: failure()
+        run: |
+          echo "=== Proto error logs ==="
+          find . /home/runner -maxdepth 3 -name "*.log" -newer /tmp/tcpdump.pid 2>/dev/null | while read f; do
+            echo "--- $f ---"
+            cat "$f"
+          done
+
+          echo ""
+          echo "=== Retry failed tools with curl -v ==="
+          for tool in zarf python go moon buf terraform actionlint hadolint grafanactl kind clusterctl yq pint sloth golangci-lint; do
+            if ! command -v "$tool" >/dev/null 2>&1; then
+              echo "--- $tool not found, attempting download ---"
+              case "$tool" in
+                zarf)     url="https://github.com/zarf-dev/zarf/releases/download/v0.74.0/zarf_v0.74.0_Linux_amd64" ;;
+                python)   url="https://github.com/indygreg/python-build-standalone/releases/download/20260320/cpython-3.14.3+20260320-x86_64-unknown-linux-gnu-install_only.tar.gz" ;;
+                go)       url="https://go.dev/dl/go1.26.1.linux-amd64.tar.gz" ;;
+                *)        url="" ;;
+              esac
+              if [ -n "$url" ]; then
+                echo "Trying: $url"
+                curl -vsSL --connect-timeout 10 --max-time 30 -o /dev/null "$url" 2>&1 | head -40
+              fi
+            fi
+          done
+
       - name: Dump pcap on failure
         if: failure()
         run: |
           sudo kill "$(cat /tmp/tcpdump.pid)" 2>/dev/null || true
           sleep 2
-          echo "--- PCAP START (base64) ---"
-          base64 /tmp/proto-install.pcap
-          echo "--- PCAP END ---"
+          pcap_size=$(stat -c%s /tmp/proto-install.pcap 2>/dev/null || echo 0)
+          echo "Pcap size: $pcap_size bytes"
+          if [ "$pcap_size" -gt 5000000 ]; then
+            echo "Pcap too large for logs ($pcap_size bytes), truncating to failed tool traffic only"
+            echo "--- PCAP TOO LARGE ---"
+          else
+            echo "--- PCAP START (base64) ---"
+            base64 /tmp/proto-install.pcap
+            echo "--- PCAP END ---"
+          fi
 
       - name: Stop tcpdump on success
         if: success()
