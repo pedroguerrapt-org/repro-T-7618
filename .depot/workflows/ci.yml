@@ -13,7 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Start tcpdump
+        run: |
+          sudo tcpdump -i any -w /tmp/proto-install.pcap \
+            'host github.com or host objects.githubusercontent.com or host codeload.github.com' \
+            -s 0 &
+          echo $! > /tmp/tcpdump.pid
+          sleep 1
+
       - name: Setup proto toolchain
+        id: proto
         uses: moonrepo/setup-toolchain@v0
         with:
           auto-install: true
@@ -26,3 +35,16 @@ jobs:
           moon --version
           terraform version
           kind version
+
+      - name: Dump pcap on failure
+        if: failure()
+        run: |
+          sudo kill "$(cat /tmp/tcpdump.pid)" 2>/dev/null || true
+          sleep 2
+          echo "--- PCAP START (base64) ---"
+          base64 /tmp/proto-install.pcap
+          echo "--- PCAP END ---"
+
+      - name: Stop tcpdump on success
+        if: success()
+        run: sudo kill "$(cat /tmp/tcpdump.pid)" 2>/dev/null || true
