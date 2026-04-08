@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -yqq tcpdump
           sudo tcpdump -i any -w /tmp/proto-install.pcap \
-            'tcp port 443' \
+            'tcp port 443 or tcp port 982' \
             -s 0 &
           echo $! > /tmp/tcpdump.pid
           sleep 1
@@ -36,6 +36,49 @@ jobs:
           moon --version
           terraform version
           kind version
+
+      - name: Network and proxy diagnostics
+        if: failure()
+        run: |
+          echo "=== SOCKS proxy status (port 982) ==="
+          ss -tlnp | grep 982 || echo "Nothing listening on port 982"
+
+          echo ""
+          echo "=== Proxy environment variables ==="
+          env | grep -iE '(proxy|socks|all_proxy|no_proxy)' | sort || echo "No proxy vars set"
+
+          echo ""
+          echo "=== Connectivity test: SOCKS proxy ==="
+          curl -vsSL --connect-timeout 5 --max-time 10 \
+            --socks5 127.0.0.1:982 \
+            -o /dev/null https://github.com 2>&1 || true
+
+          echo ""
+          echo "=== Connectivity test: direct (no proxy) ==="
+          curl -vsSL --connect-timeout 5 --max-time 10 \
+            --noproxy '*' \
+            -o /dev/null https://github.com 2>&1 || true
+
+          echo ""
+          echo "=== Connectivity test: oci.miren.cloud via SOCKS ==="
+          curl -vsSL --connect-timeout 5 --max-time 10 \
+            --socks5 127.0.0.1:982 \
+            -o /dev/null https://oci.miren.cloud/v2/ 2>&1 || true
+
+          echo ""
+          echo "=== DNS resolution ==="
+          for host in github.com oci.miren.cloud; do
+            echo "--- $host ---"
+            dig +short "$host" || nslookup "$host" || echo "DNS lookup failed"
+          done
+
+          echo ""
+          echo "=== Route table ==="
+          ip route show
+
+          echo ""
+          echo "=== Listening sockets ==="
+          ss -tlnp
 
       - name: Debug failure
         if: failure()
@@ -64,21 +107,65 @@ jobs:
             fi
           done
 
-      - name: Dump pcap on failure
+      - name: Analyze pcap on failure
         if: failure()
         run: |
           sudo kill "$(cat /tmp/tcpdump.pid)" 2>/dev/null || true
           sleep 2
-          pcap_size=$(stat -c%s /tmp/proto-install.pcap 2>/dev/null || echo 0)
-          echo "Pcap size: $pcap_size bytes"
-          if [ "$pcap_size" -gt 5000000 ]; then
-            echo "Pcap too large for logs ($pcap_size bytes), truncating to failed tool traffic only"
-            echo "--- PCAP TOO LARGE ---"
-          else
-            echo "--- PCAP START (base64) ---"
-            base64 /tmp/proto-install.pcap
-            echo "--- PCAP END ---"
-          fi
+          sudo apt-get install -yqq tshark
+
+          pcap=/tmp/proto-install.pcap
+          echo "=== Pcap summary ==="
+          capinfos "$pcap"
+
+          echo ""
+          echo "=== TCP conversations ==="
+          tshark -r "$pcap" -q -z conv,tcp
+
+          echo ""
+          echo "=== HTTP/2 requests and responses ==="
+          tshark -r "$pcap" -Y "http2.headers" -T fields \
+            -e frame.number -e frame.time_relative \
+            -e ip.dst -e http2.headers.method -e http2.headers.path \
+            -e http2.headers.status -e http2.header.value \
+            -E header=y -E separator='  '
+
+          echo ""
+          echo "=== TLS handshake SNI values ==="
+          tshark -r "$pcap" -Y "tls.handshake.extensions_server_name" -T fields \
+            -e frame.number -e ip.dst -e tls.handshake.extensions_server_name \
+            -E header=y -E separator='  '
+
+          echo ""
+          echo "=== TCP RST packets ==="
+          tshark -r "$pcap" -Y "tcp.flags.reset==1" -T fields \
+            -e frame.number -e frame.time_relative \
+            -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport \
+            -E header=y -E separator='  '
+
+          echo ""
+          echo "=== TCP retransmissions ==="
+          tshark -r "$pcap" -Y "tcp.analysis.retransmission" -T fields \
+            -e frame.number -e frame.time_relative \
+            -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport \
+            -E header=y -E separator='  '
+
+          echo ""
+          echo "=== SOCKS proxy traffic (port 982) ==="
+          tshark -r "$pcap" -Y "tcp.port==982" -T fields \
+            -e frame.number -e frame.time_relative \
+            -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport \
+            -e tcp.flags.str \
+            -E header=y -E separator='  ' || echo "No SOCKS traffic captured"
+
+          echo ""
+          echo "=== Failed TCP connections (SYN without SYN-ACK) ==="
+          tshark -r "$pcap" -q -z conv,tcp | grep -E '<->' | awk '$8 == 0 || $4 <= 2' || echo "None found"
+
+          echo ""
+          echo "=== Expert info (errors and warnings) ==="
+          tshark -r "$pcap" -q -z expert,error
+          tshark -r "$pcap" -q -z expert,warn
 
       - name: Stop tcpdump on success
         if: success()
